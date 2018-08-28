@@ -34,12 +34,12 @@
                 <router-link to="/contacts" class="app-header__link">Contacts</router-link>
 
                 <div class="app-header__social-bar">
-                    <a href="#" class="twitter" @click.prevent="openLink('#')"></a>
-                    <a href="#" class="instagram" @click.prevent="openLink('#')"></a>
-                    <a href="#" class="behance" @click.prevent="openLink('#')"></a>
-                    <a href="#" class="facebook" @click.prevent="openLink('#')"></a>
-                    <a href="#" class="vimeo" @click.prevent="openLink('#')"></a>
-                    <a href="#" class="fivepx" @click.prevent="openLink('#')"></a>
+                    <span class="twitter" @click.prevent="openLink('twitter')"></span>
+                    <span class="instagram" @click.prevent="openLink('instagram')"></span>
+                    <span class="behance" @click.prevent="openLink('behance')"></span>
+                    <span class="facebook" @click.prevent="openLink('facebook')"></span>
+                    <span class="vimeo" @click.prevent="openLink('vimeo')"></span>
+                    <span class="fivepx" @click.prevent="openLink('500px')"></span>
                 </div>
             </div>
         </nav>
@@ -50,9 +50,7 @@ export default {
     name: 'AppHeader',
 
     watch: {
-        '$route'() {
-            this.isOpenBar = window.innerWidth > 1024;
-        }
+        '$route': 'toggleBar'
     },
 
     data() {
@@ -62,26 +60,30 @@ export default {
     },
 
     mounted() {
-        this.init();
+        const avatar = this.$appContent.settings && this.$appContent.settings.avatar;
 
-        window.addEventListener('resize', this.init);
+        this.$refs.avatar.style.backgroundImage = `url(${avatar})`;
 
-        this.$refs.avatar.style.backgroundImage = `url('https://pp.userapi.com/c824409/v824409427/43826/5c_Hb6AXkoo.jpg?ava=1')`;
+        this.toggleBar();
+
+        window.addEventListener('resize', this.toggleBar);
     },
 
     methods: {
-        init() {
-            if (window.innerWidth > 1024) {
-                this.isOpenBar = true;
-            } else {
-                this.isOpenBar = false;
-            }
+        toggleBar() {
+            this.isOpenBar = window.innerWidth > 1024;
         },
 
-        openLink(link) {
-            let otherWindow = window.open();
-            otherWindow.opener = null;
-            otherWindow.location = link;
+        openLink(socialName) {
+            const socialLinks = (this.$appContent.settings && this.$appContent.settings.socialLinks) || {}
+
+            if (socialName in socialLinks) {
+                const otherWindow = window.open();  
+                
+                otherWindow.opener = null;
+                otherWindow.location = socialLinks[socialName];
+            }
+            
         }
     }
 }
@@ -246,7 +248,7 @@ export default {
         padding-top: 20px;
         border-top: 1px solid rgba(#fff, .1);
 
-        a {
+        span {
             flex-grow: 1;
             flex-shrink: 1;
             flex-basis: auto;
@@ -264,6 +266,7 @@ export default {
 
             @media screen and (min-width: 1024px) {
                 &:hover {
+                    cursor: pointer;
                     background-color: $violet;    
                 }
             }

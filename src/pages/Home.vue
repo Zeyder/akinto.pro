@@ -1,24 +1,30 @@
 <template>
     <div class="page-home">
-        <ProgressBar>
-            <Progress v-for="(_, $index) in images"
-                    :key="$index"
-                    :complete="isProgress($index)"
-                    @click="setActive($index)"
-            />
-        </ProgressBar>
-        <Slideshow :image="images[currentIndex].img"/>
+        <template v-if="isLoading">
+            <Loader/>
+        </template>
 
-        <div class="page-home__btn-prev" @click="prev"></div>
-        <div class="page-home__btn-next" @click="next"></div>
+        <template v-else-if="images.length">
+            <ProgressBar>
+                <Progress v-for="(_, $index) in images"
+                        :key="$index"
+                        :complete="isProgress($index)"
+                        @click="setActive($index)"
+                />
+            </ProgressBar>
+            <Slideshow :image="images[currentIndex]"/>
+
+            <div class="page-home__btn-prev" @click="prev"></div>
+            <div class="page-home__btn-next" @click="next"></div>
+        </template>
     </div>
 </template>
 <script>
 import ProgressBar from '../components/ProgressBar';
 import Progress from '../components/Progress';
 import Slideshow from '../components/Slideshow';
+import Loader from '../components/Loader';
 
-const images = [{img: 'https://pp.userapi.com/r-z9WvNx13Z8X_690Wg2MpchE2sMccOWGreq4Q/3n1v7xdEYNk.jpg'}, {img: 'https://pp.userapi.com/SaSqMUkCVek4LjAPAi3HgAlcOAEt5Q-BwcIJhQ/jOPYUvuV82o.jpg'}, {img: 'https://pp.userapi.com/c625526/v625526028/458c0/rwSm8bxT1yY.jpg'}, {img: 'https://pp.userapi.com/c625526/v625526028/458c9/9vHr-Pdh9RA.jpg'}, {img: 'https://pp.userapi.com/c10400/u878028/101811078/z_f706b88c.jpg'}]
 const DURATION = 9000;
 
 let interval = null;
@@ -26,18 +32,35 @@ let interval = null;
 export default {
     name: 'Home',
 
-    components: { Slideshow, ProgressBar, Progress },
+    components: { Loader, Slideshow, ProgressBar, Progress },
 
     data() {
         return {
             currentIndex: 0,
             time: 0,
-            progress: 0
+            progress: 0,
+            isLoading: false
         }
     },
 
     created() {
-        this.images = images;
+        this.images = this.$appContent.home || [];
+
+        this.isLoading = true;
+
+        Promise.all(this.images.map(item => new Promise((resolve, reject) => {
+            const img = document.createElement('img');
+            img.src = item;
+            img.onload = resolve;
+            img.onerror = reject;
+        }))).then((arr) => {
+            this.isLoading = false;
+
+            if (arr.length) {
+                this.play();
+            }
+
+        });
     },
 
     methods: {
