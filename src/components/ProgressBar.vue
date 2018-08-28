@@ -17,7 +17,7 @@ export default {
     padding: 0 10px;
 
     .progress + .progress {
-        margin-left: 5px;
+        margin-left: 2px;
     }
 }
 </style>

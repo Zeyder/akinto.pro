@@ -1,5 +1,5 @@
 <template>
-    <div class="page-personal-item">
+    <div v-touch:swipe.left="goToNext" v-touch:swipe.right="goToPrev" class="page-personal-item">
         <transition name="fade" mode="out-in">
             <div :style="backgroundImage"
                 :key="($route.params && $route.params.id) || 0"
@@ -14,22 +14,22 @@
                             :key="$index"
                             :complete="isComplete($index)"
                             :active="$index === currentIndex"
-                            @click="setImage($index)"
+                            @click.prevent="setImage($index)"
                         />
                     </ProgressBar>
                 </transition>
 
-                <button class="page-personal-item__btn-close" tabindex="-1" @click="close"></button>
+                <button class="page-personal-item__btn-close" tabindex="-1" @click.prevent="close"></button>
             </div>
             <transition name="fade" mode="out-in">
                 <div v-if="isLoaded"
                     class="page-personal-item__body"
                 >
-                    <div class="page-personal-item__btn-prev" @click="prev"></div>
+                    <div class="page-personal-item__btn-prev" @click.prevent.stop="prev"></div>
                     <div class="page-personal-item__images" @mousedown="pause" @mouseup="start">
                         <div v-for="(item, $index) in images" :key="$index" class="page-personal-item__image" :style="`background-image: url('${item}');opacity:${opacity($index)}`"></div>
                     </div>
-                    <div class="page-personal-item__btn-next" @click="next"></div>
+                    <div class="page-personal-item__btn-next" @click.prevent.stop="next"></div>
                 </div>
             </transition>
 
@@ -60,7 +60,7 @@ export default {
         if (to.params.id && findWork(to.params.id)) {
             next();
         } else {
-            next(false);
+            next({name: 'NotFound'});
         }
     },
 
@@ -214,10 +214,14 @@ export default {
                 this.time = 0;
                 this.setImage(--this.currentIndex);
             } else {
-                this.stop();
-                this.$router.push({name: 'PersonalItem', params: {id: this.prevWorkId}});
+                this.goToPrev();
             }
             
+        },
+
+        goToPrev() {
+            this.stop();
+            this.$router.push({name: 'PersonalItem', params: {id: this.prevWorkId}});
         },
 
         next() {
@@ -227,9 +231,13 @@ export default {
                 this.progress = 0;
                 this.setImage(++this.currentIndex);
             } else {
-                this.stop();
-                this.$router.push({name: 'PersonalItem', params: {id: this.nextWorkId}});
+                this.goToNext();
             }
+        },
+
+        goToNext() {
+            this.stop();
+            this.$router.push({name: 'PersonalItem', params: {id: this.nextWorkId}});
         },
 
         onKeydown(e) {
@@ -265,7 +273,12 @@ html.no-scroll {
         overflow: hidden;    
     }
 
-    .app-header, .page-personal > .photo-grid {
+    .app-header {
+        opacity: 0;    
+    }
+
+    .page-personal > .photo-grid {
+        visibility: none;
         opacity: 0;    
     }
 }

@@ -1,6 +1,6 @@
 <template>
     <div class="page-home">
-        <Loader v-if="isLoading"/>
+        <Loader/>
 
         <template v-if="images.length">
             <transition name="fade" mode="out-in" appear>
@@ -8,7 +8,7 @@
                     <Progress v-for="(_, $index) in images"
                             :key="$index"
                             :complete="isProgress($index)"
-                            @click="setActive($index)"
+                            @click.prevent="setActive($index)"
                     />
                 </ProgressBar>
             </transition>
@@ -17,8 +17,8 @@
                 <Slideshow :image="images[currentIndex]"/>
             </transition>
 
-            <div class="page-home__btn-prev" @click="prev"></div>
-            <div class="page-home__btn-next" @click="next"></div>
+            <div class="page-home__btn-prev" @click.prevent.stop="prev"></div>
+            <div class="page-home__btn-next" @click.prevent.stop="next"></div>
         </template>
     </div>
 </template>
@@ -30,7 +30,7 @@ import Loader from '../components/Loader';
 
 import imageLoader from '../utils/imageLoader';
 
-const DURATION = 9000;
+const DURATION = 12000;
 
 let interval = null;
 

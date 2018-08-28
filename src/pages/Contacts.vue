@@ -12,7 +12,7 @@
                 <input v-validate="'required|email'" type="email" class="input" placeholder="Email*" name="_replyto" data-vv-as="email" v-model="email" required>
                 <textarea v-validate="'required|min:2'" placeholder="Message*" class="input" name="message" v-model="message" required></textarea>
                 
-                <input type="hidden" name="_next" value="//akinto.pro" />
+                <input type="hidden" name="_next" value="http://akinto.pro" />
                 
                 <button class="btn-violet" type="submit">Submit</button>
             </form>
@@ -86,12 +86,12 @@ export default {
         width: 100%;
         background: transparent;
         color: #fff;
-        border: 1px solid rgba(#fff, .1);
+        border: 1px solid rgba(#fff, .3);
         margin-bottom: 5px;
         -webkit-appearance: none;
 
         &::placeholder {
-            color: rgba(#fff, .1);    
+            color: rgba(#fff, .2);    
         }
     }
 

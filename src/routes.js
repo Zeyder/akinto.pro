@@ -3,6 +3,8 @@ import Contacts from './pages/Contacts';
 import Personal from './pages/Personal';
 import PersonalItem from './pages/PersonalItem';
 import Videos from './pages/Videos';
+import NotFound from './pages/NotFound';
+import Commercial from './pages/Commercial';
 
 const routes = [
     {
@@ -23,6 +25,11 @@ const routes = [
         ]
     },
     {
+        path: '/commercial',
+        name: 'Commercial',
+        component: Commercial
+    },
+    {
         path: '/contacts',
         name: 'Contacts',
         component: Contacts
@@ -35,7 +42,7 @@ const routes = [
     {
         path: '*',
         name: 'NotFound',
-        redirect: '/'
+        component: NotFound
     }
 ];
 

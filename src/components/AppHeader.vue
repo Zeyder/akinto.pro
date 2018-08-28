@@ -92,6 +92,8 @@ export default {
 @import '../css/_variables.styl';
 
 .app-header {
+    transition: opacity 450ms ease;
+    
     &__btn {
         width: 30px;
         height: 20px;
