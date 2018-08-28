@@ -2,7 +2,7 @@ import 'es6-promise/auto';
 
 import Vue from 'vue'
 import VueRouter from 'vue-router';
-// import VueTouch from 'vue-touch';
+import VeeValidate from 'vee-validate';
 
 import App from './components/App.vue';
 import routes from './routes';
@@ -10,7 +10,7 @@ import routes from './routes';
 import _cloneDeep from 'lodash/cloneDeep';
 
 Vue.use(VueRouter);
-// Vue.use(VueTouch);
+Vue.use(VeeValidate);
 
 Vue.config.productionTip = false
 

@@ -2,7 +2,7 @@
     <div class="slideshow">
         <transition name="slideshow__item--animate">
             <div :key="props.image"
-                 :style="`background-image: url(${props.image})`"
+                 :style="`background-image: url('${props.image}')`"
                  class="slideshow__item"
             ></div>
         </transition>

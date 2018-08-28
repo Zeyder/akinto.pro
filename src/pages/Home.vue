@@ -1,18 +1,21 @@
 <template>
     <div class="page-home">
-        <template v-if="isLoading">
-            <Loader/>
-        </template>
+        <Loader v-if="isLoading"/>
 
-        <template v-else-if="images.length">
-            <ProgressBar>
-                <Progress v-for="(_, $index) in images"
-                        :key="$index"
-                        :complete="isProgress($index)"
-                        @click="setActive($index)"
-                />
-            </ProgressBar>
-            <Slideshow :image="images[currentIndex]"/>
+        <template v-if="images.length">
+            <transition name="fade" mode="out-in" appear>
+                <ProgressBar v-if="images.length > 1">
+                    <Progress v-for="(_, $index) in images"
+                            :key="$index"
+                            :complete="isProgress($index)"
+                            @click="setActive($index)"
+                    />
+                </ProgressBar>
+            </transition>
+            
+            <transition name="fade" mode="out-in" appear>
+                <Slideshow :image="images[currentIndex]"/>
+            </transition>
 
             <div class="page-home__btn-prev" @click="prev"></div>
             <div class="page-home__btn-next" @click="next"></div>
@@ -24,6 +27,8 @@ import ProgressBar from '../components/ProgressBar';
 import Progress from '../components/Progress';
 import Slideshow from '../components/Slideshow';
 import Loader from '../components/Loader';
+
+import imageLoader from '../utils/imageLoader';
 
 const DURATION = 9000;
 
@@ -43,20 +48,15 @@ export default {
         }
     },
 
-    created() {
-        this.images = this.$appContent.home || [];
+    beforeMount() {
+        this.images = this.$appContent.slides || [];
 
         this.isLoading = true;
 
-        Promise.all(this.images.map(item => new Promise((resolve, reject) => {
-            const img = document.createElement('img');
-            img.src = item;
-            img.onload = resolve;
-            img.onerror = reject;
-        }))).then((arr) => {
+        imageLoader(this.images).then((arr) => {
             this.isLoading = false;
 
-            if (arr.length) {
+            if (arr.length > 1) {
                 this.play();
             }
 
@@ -134,7 +134,9 @@ export default {
 
 
     activated() {
-        this.play();
+        if (this.images.length > 1) {
+            this.play();
+        }
     },
 
     deactivated() {

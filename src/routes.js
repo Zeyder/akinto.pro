@@ -16,7 +16,7 @@ const routes = [
         component: Personal,
         children: [
             {
-                path: '/personal/:workId',
+                path: '/personal/:id',
                 name: 'PersonalItem',
                 component: PersonalItem
             }

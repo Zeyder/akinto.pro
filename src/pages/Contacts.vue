@@ -3,11 +3,17 @@
         <div class="page-contacts__container">
             <h2>Contacts</h2>
 
-            <form @submit="onSubmit" autocomplete="off">
-                <input type="text" class="input" placeholder="Name*" v-model="name" required>
-                <input type="email" class="input" placeholder="Email*" v-model="email" required>
-                <textarea placeholder="Message*" class="input" v-model="message" required></textarea>
+            <p v-if="errors.has('name')" class="error" v-text="errors.first('name')"></p>
+            <p v-if="errors.has('_replyto')" class="error" v-text="errors.first('_replyto')"></p>
+            <p v-if="errors.has('message')" class="error" v-text="errors.first('message')"></p>
 
+            <form ref="form" autocomplete="off" @submit="onSubmit($event)">
+                <input v-validate="'required|min:2'" type="text" class="input" placeholder="Name*" name="name" v-model="name" required>
+                <input v-validate="'required|email'" type="email" class="input" placeholder="Email*" name="_replyto" data-vv-as="email" v-model="email" required>
+                <textarea v-validate="'required|min:2'" placeholder="Message*" class="input" name="message" v-model="message" required></textarea>
+                
+                <input type="hidden" name="_next" value="//akinto.pro" />
+                
                 <button class="btn-violet" type="submit">Submit</button>
             </form>
         </div>
@@ -25,8 +31,20 @@ export default {
     },
 
     methods: {
-        onSubmit() {
+        async onSubmit(e) {
+            const EMAIL = (this.$appContent.settings && this.$appContent.settings.email) 
+                || 'nikadim04b63@gmail.com';
+            
+            const form = this.$refs.form;
 
+            if (await this.$validator.validateAll()) {
+                form.setAttribute('action', `https://formspree.io/${EMAIL}`);
+                form.setAttribute('method', 'POST');
+            } else {
+                e.preventDefault();
+            }
+            
+            return false;
         }    
     }
 }
@@ -44,7 +62,11 @@ export default {
 
     &__container {
         max-width: 350px;
-        width: 100%;    
+        width: 100%;
+
+        form {
+            margin-top: 15px;
+        }    
     }
 
     h2 {
@@ -53,6 +75,11 @@ export default {
         font-size: 2.4rem;
         color: #fff;
         font-weight: 500;
+    }
+
+    .error {
+        font-size: 1.4rem;
+        color: red;
     }
 
     .input {

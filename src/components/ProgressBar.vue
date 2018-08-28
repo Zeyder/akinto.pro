@@ -14,7 +14,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px;
+    padding: 0 10px;
 
     .progress + .progress {
         margin-left: 5px;

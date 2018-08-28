@@ -13,8 +13,8 @@ export default {
     margin-top: (@height / -2);
     margin-left: (@width / -2);
     border: 1px solid transparent;
-    border-top: 2px solid $violet;
-    border-bottom: 2px solid $violet;
+    border-top: 2px solid #fff;
+    border-bottom: 2px solid #fff;
     animation: rotation 2s linear infinite alternate-reverse;    
 
     &, &:after {
@@ -31,8 +31,8 @@ export default {
         margin-top: (@height / -2);
         margin-left: (@width / -2);
         border: 1px solid transparent;
-        border-left: 2px solid $violet;
-        border-right: 2px solid $violet;
+        border-left: 2px solid #fff;
+        border-right: 2px solid #fff;
         animation: rotation 3.5s linear infinite alternate-reverse;    
     }
 }

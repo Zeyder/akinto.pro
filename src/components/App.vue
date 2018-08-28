@@ -11,7 +11,9 @@ export default {
           mode: 'out-in',
           appear: true
         }}, [
-          h('keep-alive', null, [
+          h('keep-alive', {props: {
+            exclude: ['Contacts']
+          }}, [
             h('router-view')])
           ])
         ])
@@ -33,12 +35,20 @@ export default {
 }
 
 .page {
-    &--animate-enter-active, &--animate-leave-active {
-      transition: opacity 700ms ease;
-    }
-
-    &--animate-enter, &--animate-leave-to {
-      opacity: 0;
-    } 
+  &--animate-enter-active, &--animate-leave-active {
+    transition: opacity 700ms ease;
   }
+
+  &--animate-enter, &--animate-leave-to {
+    opacity: 0;
+  } 
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 450ms ease;
+}
+
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
 </style>

@@ -1,6 +1,8 @@
 <template functional>
     <div class="progress" v-on="data.on">
-        <div :class="['progress__complete', {'progress__complete--active': props.active}]" :style="`width:${props.complete}%`"></div>
+        <div class="progress__wrap">
+            <div :class="['progress__complete', {'progress__complete--active': props.active}]" :style="`width:${props.complete}%`"></div>
+        </div>
     </div>
 </template>
 <script>
@@ -23,13 +25,18 @@ export default {
 <style lang="stylus">
 .progress {
     flex: 1 0 auto;
-    overflow: hidden;
-    background-color: rgba(#fff, .5);
-    box-shadow: 0 0 20px rgba(#000, .5);
     cursor: pointer;
+    padding: 10px 0;
+
+    &__wrap {
+        width: 100%;
+        overflow: hidden;
+        background-color: rgba(#fff, .5);
+        box-shadow: 0 0 20px rgba(#000, .5);
+    }
 
 
-    &, &__complete {
+    &__wrap, &__complete {
         height: 4px;
         border-radius: 50px;
 

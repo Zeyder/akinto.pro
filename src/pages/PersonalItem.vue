@@ -1,56 +1,90 @@
 <template>
     <div class="page-personal-item">
-        <div class="page-personal-item__background" :style="backgroundImage"></div>
+        <transition name="fade" mode="out-in">
+            <div :style="backgroundImage"
+                :key="($route.params && $route.params.id) || 0"
+                class="page-personal-item__background"
+            ></div>
+        </transition>
         <div class="page-personal-item__wrapper">
             <div class="page-personal-item__header">
-                <ProgressBar>
-                    <Progress v-for="(_, $index) in images"
-                        :key="$index"
-                        :complete="isComplete($index)"
-                        :active="$index === currentIndex"
-                        @click="setImage($index)"
-                    />
-                </ProgressBar>
+                <transition name="fade" mode="out-in">
+                    <ProgressBar v-if="isLoaded">
+                        <Progress v-for="(_, $index) in images"
+                            :key="$index"
+                            :complete="isComplete($index)"
+                            :active="$index === currentIndex"
+                            @click="setImage($index)"
+                        />
+                    </ProgressBar>
+                </transition>
 
                 <button class="page-personal-item__btn-close" tabindex="-1" @click="close"></button>
             </div>
-            <div class="page-personal-item__body">
-                <div class="page-personal-item__btn-prev" @click="prev"></div>
-                <div class="page-personal-item__images" @mousedown="pause" @mouseup="start">
-                    <div v-for="(item, $index) in images" :key="$index" class="page-personal-item__image" :style="`background-image: url(${item};opacity:${opacity($index)}`"></div>
+            <transition name="fade" mode="out-in">
+                <div v-if="isLoaded"
+                    class="page-personal-item__body"
+                >
+                    <div class="page-personal-item__btn-prev" @click="prev"></div>
+                    <div class="page-personal-item__images" @mousedown="pause" @mouseup="start">
+                        <div v-for="(item, $index) in images" :key="$index" class="page-personal-item__image" :style="`background-image: url('${item}');opacity:${opacity($index)}`"></div>
+                    </div>
+                    <div class="page-personal-item__btn-next" @click="next"></div>
                 </div>
-                <div class="page-personal-item__btn-next" @click="next"></div>
-            </div>
+            </transition>
+
+            <Loader v-if="!isLoaded"/>
         </div>
     </div>
 </template>
 <script>
 import ProgressBar from '../components/ProgressBar';
 import Progress from '../components/Progress';
+import Loader from '../components/Loader';
+
+import imageLoader from '../utils/imageLoader';
 
 let interval = null;
 
-const images = [
-                require('../assets/process/1.jpg'),
-                require('../assets/process/2.jpg'),
-                require('../assets/process/3.jpg'),
-                require('../assets/process/4.jpg'),
-                require('../assets/process/5.jpg'),
-                require('../assets/process/6.jpg')
-            ]
+const findWork = (id) => {
+    const personal = window.$appContent && window.$appContent.personal || {};
+
+    return id in personal;
+}
 
 export default {
     name: 'PersonalItem',
-    components: { ProgressBar, Progress },
+    components: { ProgressBar, Progress, Loader },
+
+    beforeRouteEnter(to, _, next) {
+        if (to.params.id && findWork(to.params.id)) {
+            next();
+        } else {
+            next(false);
+        }
+    },
+
+    beforeRouteUpdate(to, _, next) {
+        if (to.name === 'PersonalItem' && findWork(to.params.id)) {
+            this.setWork(to.params.id);
+        }
+
+        next();
+    },
 
     data() {
         return {
             time: 0,
-            currentIndex: images.length - 1,
+            currentIndex: 0,
             inProgress: false,
             progress: 100,
-            images
+            images: [],
+            isLoaded: false
         }
+    },
+
+    beforeMount() {
+        this.setWork(this.$route.params.id);
     },
 
     mounted() {
@@ -63,7 +97,33 @@ export default {
 
     computed: {
         backgroundImage() {
-            return `background-image: url(${this.images[this.images.length - 1]})`;
+            if (this.images.length) {
+                return `background-image: url('${this.images[this.images.length - 1]}')`;
+            }
+
+            return '';
+        },
+
+        prevWorkId() {
+            const keys = Object.keys(this.$appContent.personal);
+            const currentWorkIndex = keys.indexOf(this.$route.params.id);
+
+            if (currentWorkIndex - 1 >= 0) {
+                return this.$appContent.personal[keys[currentWorkIndex - 1]].id;
+            } else {
+                return this.$appContent.personal[keys[keys.length - 1]].id;
+            }
+        },
+
+        nextWorkId() {
+            const keys = Object.keys(this.$appContent.personal);
+            const currentWorkIndex = keys.indexOf(this.$route.params.id);
+
+            if (currentWorkIndex + 1 <= keys.length - 1) {
+                return this.$appContent.personal[keys[currentWorkIndex + 1]].id;
+            } else {
+                return this.$appContent.personal[keys[0]].id;
+            }
         }
     },
 
@@ -137,17 +197,27 @@ export default {
             }
         },
 
-        prev() {
-            this.pause();
-            this.progress = 0;
-            this.time = 0;
-            
-            let currentIndex = this.currentIndex;
+        setWork(id) {
+            this.isLoaded = false;
+            this.images = this.$appContent.personal[id].images;
+            this.currentIndex = this.images.length - 1;
 
+            imageLoader(this.images).then(() => {
+                this.isLoaded = true;
+            });
+        },
+
+        prev() {
             if (this.currentIndex - 1 >= 0) {
-                currentIndex = this.currentIndex - 1;
+                this.pause();
+                this.progress = 0;
+                this.time = 0;
+                this.setImage(--this.currentIndex);
+            } else {
+                this.stop();
+                this.$router.push({name: 'PersonalItem', params: {id: this.prevWorkId}});
             }
-            this.setImage(currentIndex);
+            
         },
 
         next() {
@@ -155,9 +225,10 @@ export default {
                 this.pause();
                 this.time = 0;
                 this.progress = 0;
-                this.setImage(this.currentIndex + 1);
+                this.setImage(++this.currentIndex);
             } else {
                 this.stop();
+                this.$router.push({name: 'PersonalItem', params: {id: this.nextWorkId}});
             }
         },
 
@@ -172,13 +243,13 @@ export default {
 
                 // Left
                 case 37: {
-                    this.prev();
+                    this.isLoaded && this.prev();
                 } break;
 
                 // Right
 
                 case 39: {
-                    this.next();
+                    this.isLoaded && this.next();
                 } break;
             }
         }

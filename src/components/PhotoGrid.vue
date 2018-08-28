@@ -1,9 +1,9 @@
 <template functional>
     <transition-group name="photo-grid__column--animate" class="photo-grid" tag="div" appear>
-        <router-link v-for="(item, $index) in props.items"
-            :to="item.link"
-            :key="$index"
-            :style="`background-image: url(${item.img})`"
+        <router-link v-for="(item, key, index) in props.items"
+            :to="{name: 'PersonalItem', params: {id: item.id}}"
+            :key="key"
+            :style="{backgroundImage: `url('${item.img}')`, transitionDelay: `${index / 10}s`}"
             class="photo-grid__column"
         ></router-link>
     </transition-group>
@@ -14,7 +14,7 @@ export default {
 
     props: {
         items: {
-            type: Array,
+            type: [Array, Object],
             required: true
         }
     }
@@ -54,13 +54,6 @@ export default {
             transform: translateY(10px);
             opacity: 0;
         }
-
-        for i in 1..15 {
-            &:nth-child({i}) {
-                transition-delay: unit(i * 100, 'ms');
-            }
-        }
-
     }
 }
 </style>

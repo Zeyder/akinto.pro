@@ -1,9 +1,9 @@
 <?php
 header('Content-type: text/html;charset=UTF-8');
 
-$domain = $_SERVER['HTTP_HOST'];
+$domain = "http://" . $_SERVER['HTTP_HOST'];
 
-$marker = '<!--[script]-->';
+$marker = '<script id=appContent></script>';
 
 $index_file_template_path = $_SERVER['DOCUMENT_ROOT'] . '/index.tpl.html';
 
@@ -17,7 +17,6 @@ $images_folder = [
 
 $app_content = [
 	"settings" => get_settings(),
-	"video" => Array(),
 	"slides" => get_slides(),
 	"personal" => get_personal(),
 	"commercial" => get_commercial()
@@ -51,8 +50,10 @@ function get_personal() {
 	$projects = Array();
 	
 	if (file_exists($folder)) {		
-		foreach(glob($folder . '/*') as $key => $val) {	
-			$projects[] = get_project_item(str_replace($folder . '/', '', $val), $val);
+		foreach(glob($folder . '/*') as $key => $item) {
+			$name_project = create_id(str_replace($folder . '/', '', $item));
+
+			$projects[$name_project] = get_project_item($name_project, $item);
 		}
 	}
 	
@@ -80,9 +81,11 @@ function get_commercial() {
 			$info = file_exists($info_filename)
 				? json_encode(file_get_contents($info_filename))
 				: null;
+
+			$name_project = create_id(str_replace($folder . '/', '', $item));
 			
-			$projects[$key] = get_project_item(str_replace($folder . '/', '', $item), $item);
-			$projects[$key]['info'] = $info;
+			$projects[$name_project] = get_project_item($name_project, $item);
+			$projects[$name_project]['info'] = $info;
 		}
 	}
 	
@@ -100,10 +103,16 @@ function get_images($path, $extension = 'jpg') {
 	return $images;
 }
 
+function get_cover($path) {
+	$images = get_images($path);
+	return $images[count($images) - 1];
+}
+
 function get_project_item($name, $folder) {
 	return [
-		"url"     => create_url($name),
+		"id"      => create_id($name),
 		"name"    => prepare_name($name),
+		"img"     => get_cover($folder),
 		"images"  => get_images($folder)
 	];
 }
@@ -112,6 +121,6 @@ function prepare_name($name) {
 	return str_replace('_', ' ', $name);
 }
 
-function create_url($name) {	
-	return '/' . str_replace(' ', '-', strtolower($name));
+function create_id($name) {	
+	return str_replace(' ', '-', strtolower($name));
 }

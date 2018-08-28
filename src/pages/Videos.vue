@@ -8,11 +8,8 @@
 <script>
 export default {
     name: 'Videos',
-    
-    data() {
-        return {
-            videos: ['https://www.youtube.com/embed/xcJtL7QggTI', 'https://www.youtube.com/embed/xcJtL7QggTI']
-        }
+    beforeMount() {
+        this.videos = this.$appContent.settings && this.$appContent.settings.videos;
     }
 }
 </script>
