@@ -1,7 +1,7 @@
 <?php
 header('Content-type: text/html;charset=UTF-8');
 
-$domain = "http://" . $_SERVER['HTTP_HOST'];
+$domain = "//" . $_SERVER['HTTP_HOST'];
 
 $marker = '<script id=appContent></script>';
 

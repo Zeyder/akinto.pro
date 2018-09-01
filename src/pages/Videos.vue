@@ -19,12 +19,13 @@ export default {
 $sidebar-width = 230px;
 
 .page-videos {
-    padding: 0 20px 20px;
+    padding: 20px 20px 0;
     &__embed {
         width: 100%;
+        max-width: 768px;
         position: relative;
-        padding-top: 56.1%;
-        margin-top: 20px;
+        padding-top: 50%;
+        margin: 0 auto 20px;
         background-color: rgba(#fff, .1);
     }
 
