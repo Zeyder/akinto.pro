@@ -148,11 +148,12 @@ export default {
     position: relative;
 
     .progress-bar {
-        left: 0;
-        right: 0;
+        left: 50px;
+        right: 50px;
         top: 0;
         position: absolute;
         z-index: 3;
+        width: auto;
 
         .progress {
             max-width: 70px;

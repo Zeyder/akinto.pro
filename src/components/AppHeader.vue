@@ -1,12 +1,14 @@
 <template>
     <header class="app-header">
-        <button :class="['app-header__btn', {'app-header__btn--active': isOpenBar}]"
+        <button class="app-header__btn"
                 tabindex="-1"
                 @click="isOpenBar = !isOpenBar"
         >
-            <span></span>
-            <span></span>
-            <span></span>
+            <span :class="['app-header__btn-icon', {'app-header__btn-icon--active': isOpenBar}]">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
         </button>
 
         <div :class="['app-header__overlay', {'app-header__overlay--show': isOpenBar}]" @click="isOpenBar = !isOpenBar"></div>
@@ -92,17 +94,14 @@ export default {
 .app-header {
     transition: opacity 600ms ease;
 
-    &__btn {
+    &__btn-icon {
         width: 30px;
         height: 20px;
-        position: fixed;
-        right: 10px;
-        top: 15px;
         display: flex;
+
         flex-direction: column;
         justify-content: space-between;
         align-items: stretch;
-        z-index: 3;
 
         span {
             width: 100%;
@@ -134,6 +133,19 @@ export default {
                 transform: rotate(45deg) translateX(1px) translateY(-9.6px);
             }
         }
+    }
+
+    &__btn {
+        width: 45px;
+        height: 45px;
+        position: fixed;
+        right: 0px;
+        top: 0px;
+        display: flex;
+        z-index: 3;
+
+        justify-content: center;
+        align-items: center;
 
         @media screen and (min-width: 1024px) {
             display: none;
@@ -185,6 +197,7 @@ export default {
         height: 100%;
         overflow-y: scroll;
         padding: 20px 25px 20px 20px;
+        -webkit-overflow-scrolling: touch;
         scroll-behavior: smooth;
     }
 

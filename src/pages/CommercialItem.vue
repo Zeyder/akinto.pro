@@ -7,7 +7,7 @@
     <div v-if="isLoaded"
         class="container"
     >
-      <div class="page-commercial-item__info">
+      <div v-if="isShowInfo" class="page-commercial-item__info">
         <p v-for="(value, $key, $index) in info"
           :key="$index"
         >
@@ -64,6 +64,10 @@ export default {
 
     info () {
       return this.project.info || {}
+    },
+
+    isShowInfo () {
+      return Object.keys(this.info).length > 0
     }
   },
 
@@ -99,7 +103,7 @@ export default {
 
   .container {
     max-width: 100%;
-    margin: 50px auto 0;
+    margin: auto;
 
     @media screen and (min-width: 1024px) {
       max-width: 768px;
@@ -107,13 +111,15 @@ export default {
   }
 
   img {
+    display: block;
     width: 100%;
     height: auto;
     max-width: 100%;
-    margin: 0;
+    margin-bottom: 5px;
   }
 
   &__info {
+    margin-top: 50px;
     margin-bottom: 17px;
     font-size: 1.4rem;
 
