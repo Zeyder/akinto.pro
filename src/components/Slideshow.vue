@@ -10,14 +10,14 @@
 </template>
 <script>
 export default {
-    name: 'Slideshow',
+  name: 'Slideshow',
 
-    props: {
-        image: {
-            type: String,
-            required: true
-        }
+  props: {
+    image: {
+      type: String,
+      required: true
     }
+  }
 }
 </script>
 <style lang="stylus">
@@ -40,9 +40,8 @@ export default {
         animation: zoomIn 30s linear infinite;
 
         &--animate-enter-active, &--animate-leave-active {
-            transition: opacity 1.5s ease-in-out;    
+            transition: opacity 1.5s ease-in-out;
         }
-
 
         &--animate-enter, &--animate-leave-to {
             opacity: 0;
@@ -53,7 +52,6 @@ export default {
 @keyframes zoomIn {
     to {
         transform: scale(1.1);
-    }    
+    }
 }
 </style>
-

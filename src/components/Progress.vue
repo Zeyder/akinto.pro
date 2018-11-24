@@ -7,19 +7,19 @@
 </template>
 <script>
 export default {
-    name: 'Progress',
+  name: 'Progress',
 
-    props: {
-        active: {
-            type: Boolean,
-            default: false
-        },
-        complete: {
-            type: Number,
-            required: true,
-            validator: val => val >= 0 && val <= 100
-        }
+  props: {
+    active: {
+      type: Boolean,
+      default: false
+    },
+    complete: {
+      type: Number,
+      required: true,
+      validator: val => val >= 0 && val <= 100
     }
+  }
 }
 </script>
 <style lang="stylus">
@@ -35,13 +35,12 @@ export default {
         box-shadow: 0 0 20px rgba(#000, .5);
     }
 
-
     &__wrap, &__complete {
         height: 4px;
         border-radius: 50px;
 
         @media screen and (max-width: 1024px) {
-            height: 2px;    
+            height: 2px;
         }
     }
 
@@ -51,9 +50,8 @@ export default {
         background-color: #fff;
 
         &--active {
-            transition: width 100ms linear;    
-        }    
+            transition: width 100ms linear;
+        }
     }
 }
 </style>
-

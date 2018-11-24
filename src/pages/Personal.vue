@@ -8,27 +8,26 @@
     </div>
 </template>
 <script>
-let scrollTop = 0;
+import PhotoGrid from '../components/PhotoGrid'
 
-import PhotoGrid from '../components/PhotoGrid';
+let scrollTop = 0
 
 export default {
-    name: 'Personal',
-    components: { PhotoGrid },
+  name: 'Personal',
+  components: { PhotoGrid },
 
-    methods: {
-        enter() {
-            scrollTop = document.body.scrollTop;
-            document.body.style.paddingRight = window.outerWidth - document.body.clientWidth + 'px';
-            document.querySelector('html').classList.add('no-scroll');
-        },
+  methods: {
+    enter () {
+      scrollTop = document.body.scrollTop
+      document.body.style.paddingRight = window.outerWidth - document.body.clientWidth + 'px'
+      document.querySelector('html').classList.add('no-scroll')
+    },
 
-        afterLeave() {
-            document.querySelector('html').classList.remove('no-scroll');
-            document.body.style.paddingRight = 0;
-            document.body.scrollTop = scrollTop;
-        }
+    afterLeave () {
+      document.querySelector('html').classList.remove('no-scroll')
+      document.body.style.paddingRight = 0
+      document.body.scrollTop = scrollTop
     }
+  }
 }
 </script>
-

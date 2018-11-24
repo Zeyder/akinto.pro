@@ -7,10 +7,10 @@
 </template>
 <script>
 export default {
-    name: 'Videos',
-    beforeMount() {
-        this.videos = this.$appContent.settings && this.$appContent.settings.videos;
-    }
+  name: 'Videos',
+  beforeMount () {
+    this.videos = this.$appContent.settings && this.$appContent.settings.videos
+  }
 }
 </script>
 <style lang="stylus">
@@ -41,4 +41,3 @@ $sidebar-width = 230px;
     }
 }
 </style>
-

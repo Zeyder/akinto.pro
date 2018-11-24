@@ -12,7 +12,7 @@
                     />
                 </ProgressBar>
             </transition>
-            
+
             <transition name="fade" mode="out-in" appear>
                 <Slideshow :image="images[currentIndex]"/>
             </transition>
@@ -23,125 +23,122 @@
     </div>
 </template>
 <script>
-import ProgressBar from '../components/ProgressBar';
-import Progress from '../components/Progress';
-import Slideshow from '../components/Slideshow';
-import Loader from '../components/Loader';
+import ProgressBar from '../components/ProgressBar'
+import Progress from '../components/Progress'
+import Slideshow from '../components/Slideshow'
+import Loader from '../components/Loader'
 
-import imageLoader from '../utils/imageLoader';
+import imageLoader from '../utils/imageLoader'
 
-const DURATION = 12000;
+const DURATION = 12000
 
-let interval = null;
+let interval = null
 
 export default {
-    name: 'Home',
+  name: 'Home',
 
-    components: { Loader, Slideshow, ProgressBar, Progress },
+  components: { Loader, Slideshow, ProgressBar, Progress },
 
-    data() {
-        return {
-            currentIndex: 0,
-            time: 0,
-            progress: 0,
-            isLoading: false
-        }
-    },
-
-    beforeMount() {
-        this.images = this.$appContent.slides || [];
-
-        this.isLoading = true;
-
-        imageLoader(this.images).then((arr) => {
-            this.isLoading = false;
-
-            if (arr.length > 1) {
-                this.play();
-            }
-
-        });
-    },
-
-    methods: {
-        isProgress(index) {
-            if (index < this.currentIndex) {
-                return 100;
-            } else if (index === this.currentIndex) {
-                return this.progress;
-            } else {
-                return 0;
-            }
-
-        },
-
-        setActive(index) {
-            this.stop();
-
-            this.currentIndex = index;
-
-            this.play();
-        },
-
-        stop() {
-            clearInterval(interval);
-
-            this.time = 0;
-
-            this.progress = 0;
-        },
-
-        pause() {
-            clearInterval(interval);
-        },
-
-        play() {
-            const step = 100;
-
-            interval = setInterval(() => {
-                if (this.time === DURATION) {
-                    if (this.currentIndex < this.images.length - 1) {
-                        this.currentIndex++;
-                    } else {
-                        this.currentIndex = 0;
-                    }
-
-                    this.time = 0;
-                } else {
-                    this.time += step;
-                }
-
-                this.progress = this.time / DURATION * 100;
-            }, step);
-        },
-
-        prev() {
-            if (this.currentIndex > 0) {
-                this.setActive(this.currentIndex - 1);
-            } else {
-                this.setActive(this.images.length - 1);
-            }
-        },
-
-        next() {
-            if (this.currentIndex < this.images.length - 1) {
-                this.setActive(this.currentIndex + 1);
-            } else {
-                this.setActive(0);
-            }
-        }
-    },
-
-
-    activated() {
-        if (this.images.length > 1) {
-            this.play();
-        }
-    },
-
-    deactivated() {
-        this.pause();
+  data () {
+    return {
+      currentIndex: 0,
+      time: 0,
+      progress: 0,
+      isLoading: false
     }
+  },
+
+  beforeMount () {
+    this.images = this.$appContent.slides || []
+
+    this.isLoading = true
+
+    imageLoader(this.images).then((arr) => {
+      this.isLoading = false
+
+      if (arr.length > 1) {
+        this.play()
+      }
+    })
+  },
+
+  methods: {
+    isProgress (index) {
+      if (index < this.currentIndex) {
+        return 100
+      } else if (index === this.currentIndex) {
+        return this.progress
+      } else {
+        return 0
+      }
+    },
+
+    setActive (index) {
+      this.stop()
+
+      this.currentIndex = index
+
+      this.play()
+    },
+
+    stop () {
+      clearInterval(interval)
+
+      this.time = 0
+
+      this.progress = 0
+    },
+
+    pause () {
+      clearInterval(interval)
+    },
+
+    play () {
+      const step = 100
+
+      interval = setInterval(() => {
+        if (this.time === DURATION) {
+          if (this.currentIndex < this.images.length - 1) {
+            this.currentIndex++
+          } else {
+            this.currentIndex = 0
+          }
+
+          this.time = 0
+        } else {
+          this.time += step
+        }
+
+        this.progress = this.time / DURATION * 100
+      }, step)
+    },
+
+    prev () {
+      if (this.currentIndex > 0) {
+        this.setActive(this.currentIndex - 1)
+      } else {
+        this.setActive(this.images.length - 1)
+      }
+    },
+
+    next () {
+      if (this.currentIndex < this.images.length - 1) {
+        this.setActive(this.currentIndex + 1)
+      } else {
+        this.setActive(0)
+      }
+    }
+  },
+
+  activated () {
+    if (this.images.length > 1) {
+      this.play()
+    }
+  },
+
+  deactivated () {
+    this.pause()
+  }
 }
 </script>
 <style lang="stylus">
@@ -158,8 +155,8 @@ export default {
         z-index: 3;
 
         .progress {
-            max-width: 70px;    
-        } 
+            max-width: 70px;
+        }
     }
 
     &__btn-prev, &__btn-next {
@@ -172,11 +169,11 @@ export default {
     }
 
     &__btn-prev {
-        left: 0;    
+        left: 0;
     }
 
     &__btn-next {
-        right: 0;    
-    }    
+        right: 0;
+    }
 }
 </style>

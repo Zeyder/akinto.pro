@@ -11,9 +11,9 @@
                 <input v-validate="'required|min:2'" type="text" class="input" placeholder="Name*" name="name" v-model="name" required>
                 <input v-validate="'required|email'" type="email" class="input" placeholder="Email*" name="_replyto" data-vv-as="email" v-model="email" required>
                 <textarea v-validate="'required|min:2'" placeholder="Message*" class="input" name="message" v-model="message" required></textarea>
-                
+
                 <input type="hidden" name="_next" value="http://akinto.pro" />
-                
+
                 <button class="btn-violet" type="submit">Submit</button>
             </form>
         </div>
@@ -21,32 +21,32 @@
 </template>
 <script>
 export default {
-    name: 'Contacts',
-    data() {
-        return {
-            name: '',
-            email: '',
-            message: ''
-        }
-    },
-
-    methods: {
-        async onSubmit(e) {
-            const EMAIL = (this.$appContent.settings && this.$appContent.settings.email) 
-                || 'nikadim04b63@gmail.com';
-            
-            const form = this.$refs.form;
-
-            if (await this.$validator.validateAll()) {
-                form.setAttribute('action', `https://formspree.io/${EMAIL}`);
-                form.setAttribute('method', 'POST');
-            } else {
-                e.preventDefault();
-            }
-            
-            return false;
-        }    
+  name: 'Contacts',
+  data () {
+    return {
+      name: '',
+      email: '',
+      message: ''
     }
+  },
+
+  methods: {
+    async onSubmit (e) {
+      const EMAIL = (this.$appContent.settings && this.$appContent.settings.email) ||
+                'nikadim04b63@gmail.com'
+
+      const form = this.$refs.form
+
+      if (await this.$validator.validateAll()) {
+        form.setAttribute('action', `https://formspree.io/${EMAIL}`)
+        form.setAttribute('method', 'POST')
+      } else {
+        e.preventDefault()
+      }
+
+      return false
+    }
+  }
 }
 </script>
 <style lang="stylus">
@@ -66,7 +66,7 @@ export default {
 
         form {
             margin-top: 15px;
-        }    
+        }
     }
 
     h2 {
@@ -91,7 +91,7 @@ export default {
         -webkit-appearance: none;
 
         &::placeholder {
-            color: rgba(#fff, .2);    
+            color: rgba(#fff, .2);
         }
     }
 
@@ -107,8 +107,8 @@ export default {
 
         @media screen and (min-width: 1024px) {
             &:hover {
-                background-color: darken($violet, 25%);    
-            }    
+                background-color: darken($violet, 25%);
+            }
         }
     }
 

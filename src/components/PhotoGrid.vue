@@ -1,7 +1,7 @@
 <template functional>
     <transition-group name="photo-grid__column--animate" class="photo-grid" tag="div" appear>
         <router-link v-for="(item, key, index) in props.items"
-            :to="{name: 'PersonalItem', params: {id: item.id}}"
+            :to="{name: props.routeName, params: {id: item.id}}"
             :key="key"
             :style="{backgroundImage: `url('${item.img}')`, transitionDelay: `${index / 10}s`}"
             class="photo-grid__column"
@@ -10,14 +10,18 @@
 </template>
 <script>
 export default {
-    name: 'PhotoGrid',
+  name: 'PhotoGrid',
 
-    props: {
-        items: {
-            type: [Array, Object],
-            required: true
-        }
+  props: {
+    items: {
+      type: [Array, Object],
+      required: true
+    },
+    routeName: {
+      type: String,
+      default: 'PersonalItem'
     }
+  }
 }
 </script>
 <style lang="stylus">

@@ -1,24 +1,31 @@
+<template>
+  <div class="app-layout">
+    <AppHeader :class="{'app-header--hide': isHideHeader}"/>
+
+    <main>
+      <transition name="page--animate" mode="out-in" appear>
+        <keep-alive :exclude="excludeRoutes">
+          <router-view/>
+        </keep-alive>
+      </transition>
+    </main>
+  </div>
+</template>
+
 <script>
-import AppHeader from '@/components/AppHeader';
+import AppHeader from '@/components/AppHeader'
 export default {
   name: 'app',
-  functional: true,
-  render: h => h('div', {class: 'app-layout'}, [
-    h(AppHeader), null, [
-      h('main', null, [
-        h('transition', {props: {
-          name: 'page--animate',
-          mode: 'out-in',
-          appear: true
-        }}, [
-          h('keep-alive', {props: {
-            exclude: ['Contacts']
-          }}, [
-            h('router-view')])
-          ])
-        ])
-      ]
-    ])
+  components: { AppHeader },
+  computed: {
+    isHideHeader () {
+      return this.$route.name === 'PersonalItem'
+    },
+
+    excludeRoutes () {
+      return ['Contacts', 'PersonalItem', 'CommercialItem']
+    }
+  }
 }
 </script>
 <style lang="stylus">
@@ -27,25 +34,25 @@ export default {
 
 .app-layout {
   width: 100%;
-  transition: padding 450ms ease;
-  
+  transition: padding 350ms ease;
+
   @media screen and (min-width: 1024px) {
-    padding-left: $app-header-width;  
+    padding-left: $app-header-width;
   }
 }
 
 .page {
   &--animate-enter-active, &--animate-leave-active {
-    transition: opacity 700ms ease;
+    transition: opacity 600ms ease;
   }
 
   &--animate-enter, &--animate-leave-to {
     opacity: 0;
-  } 
+  }
 }
 
 .fade-enter-active, .fade-leave-active {
-  transition: opacity 450ms ease;
+  transition: opacity 350ms ease;
 }
 
 .fade-enter, .fade-leave-to {

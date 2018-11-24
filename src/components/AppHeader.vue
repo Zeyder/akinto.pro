@@ -10,7 +10,6 @@
         </button>
 
         <div :class="['app-header__overlay', {'app-header__overlay--show': isOpenBar}]" @click="isOpenBar = !isOpenBar"></div>
-        
 
         <nav :class="['app-header__nav', {'app-header__nav--open': isOpenBar}]">
             <div class="app-header__nav-scrollbar">
@@ -47,65 +46,63 @@
 </template>
 <script>
 export default {
-    name: 'AppHeader',
+  name: 'AppHeader',
 
-    watch: {
-        '$route': 'toggleBar'
-    },
+  watch: {
+    '$route': 'toggleBar'
+  },
 
-    data() {
-        return {
-            isOpenBar: false
-        }
-    },
-
-    mounted() {
-        const avatar = this.$appContent.settings && this.$appContent.settings.avatar;
-
-        this.$refs.avatar.style.backgroundImage = `url(${avatar})`;
-
-        this.toggleBar();
-
-        window.addEventListener('resize', this.toggleBar);
-    },
-
-    methods: {
-        toggleBar() {
-            this.isOpenBar = window.innerWidth > 1024;
-        },
-
-        openLink(socialName) {
-            const socialLinks = (this.$appContent.settings && this.$appContent.settings.socialLinks) || {}
-
-            if (socialName in socialLinks) {
-                const otherWindow = window.open();  
-                
-                otherWindow.opener = null;
-                otherWindow.location = socialLinks[socialName];
-            }
-            
-        }
+  data () {
+    return {
+      isOpenBar: false
     }
+  },
+
+  mounted () {
+    const avatar = this.$appContent.settings && this.$appContent.settings.avatar
+
+    this.$refs.avatar.style.backgroundImage = `url(${avatar})`
+
+    this.toggleBar()
+
+    window.addEventListener('resize', this.toggleBar)
+  },
+
+  methods: {
+    toggleBar () {
+      this.isOpenBar = window.innerWidth >= 1024
+    },
+
+    openLink (socialName) {
+      const socialLinks = (this.$appContent.settings && this.$appContent.settings.socialLinks) || {}
+
+      if (socialName in socialLinks) {
+        const otherWindow = window.open()
+
+        otherWindow.opener = null
+        otherWindow.location = socialLinks[socialName]
+      }
+    }
+  }
 }
 </script>
 <style lang="stylus">
 @import '../css/_variables.styl';
 
 .app-header {
-    transition: opacity 450ms ease;
-    
+    transition: opacity 600ms ease;
+
     &__btn {
         width: 30px;
         height: 20px;
         position: fixed;
         right: 10px;
-        top: 20px;
+        top: 15px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         align-items: stretch;
         z-index: 3;
-
 
         span {
             width: 100%;
@@ -113,15 +110,15 @@ export default {
             border-radius: 3px;
             background-color: #fff;
             box-shadow: 0 0 20px rgba(#000, .5);
-            transition: all 450ms ease;
+            transition: all 350ms ease;
 
             &:nth-child(2) {
-                width: 85%;    
+                width: 85%;
             }
 
             &:nth-child(3) {
                 width: 70%;
-            } 
+            }
         }
 
         &--active span {
@@ -130,20 +127,20 @@ export default {
             }
 
             &:nth-child(2) {
-                transform: rotate(45deg) translateX(-1px) translateY(-1.6px);    
+                transform: rotate(45deg) translateX(-1px) translateY(-1.6px);
             }
 
             &:nth-child(3) {
-                transform: rotate(45deg) translateX(1px) translateY(-9.6px); 
+                transform: rotate(45deg) translateX(1px) translateY(-9.6px);
             }
         }
 
         @media screen and (min-width: 1024px) {
             display: none;
-        }   
+        }
     }
 
-    @media screen and (max-width: 1024px) {
+    @media screen and (max-width: 1023px) {
         &__overlay {
             position: fixed;
             top: -70px;
@@ -152,7 +149,7 @@ export default {
             bottom: -70px;
             z-index: 2;
             background-color: rgba(#000, .8);
-            transition: opacity 450ms ease, visibility 450ms ease;
+            transition: opacity 350ms ease, visibility 350ms ease;
             opacity: 0;
             visibility: hidden;
 
@@ -160,7 +157,7 @@ export default {
                 opacity: 1;
                 visibility: visible;
             }
-        }    
+        }
     }
 
     &__nav {
@@ -174,13 +171,13 @@ export default {
         top: 0;
         left: 0;
         overflow: hidden;
-        transition: transform 450ms ease;
+        transition: transform 350ms ease;
         transform: translateX($app-header-width * -1);
         z-index: 99;
 
         &--open {
             transform: translateX(0);
-        }    
+        }
     }
 
     &__nav-scrollbar {
@@ -188,7 +185,7 @@ export default {
         height: 100%;
         overflow-y: scroll;
         padding: 20px 25px 20px 20px;
-        scroll-behavior: smooth;    
+        scroll-behavior: smooth;
     }
 
     &__user-info {
@@ -197,7 +194,7 @@ export default {
         flex-wrap: wrap;
         padding-bottom: 20px;
         margin-bottom: 15px;
-        border-bottom: 1px solid rgba(#fff, .1);    
+        border-bottom: 1px solid rgba(#fff, .1);
     }
 
     &__avatar {
@@ -208,11 +205,11 @@ export default {
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
-        margin-right: 15px;    
+        margin-right: 15px;
     }
 
     &__userdesc {
-        width: 90px;   
+        width: 90px;
     }
 
     &__username {
@@ -223,7 +220,7 @@ export default {
     &__position {
         margin-top: 5px;
         color: rgba(#fff, .3);
-        font-size: 1.4rem;    
+        font-size: 1.4rem;
     }
 
     &__link {
@@ -233,11 +230,11 @@ export default {
         font-size: 1.6rem;
         font-weight: 500;
         color: #fff;
-        transition: color 450ms ease;
+        transition: color 350ms ease;
 
         @media screen and (min-width: 1024px) {
             &:hover {
-                color: $violet;    
+                color: $violet;
             }
         }
     }
@@ -258,46 +255,49 @@ export default {
             background-repeat: no-repeat;
             background-size: cover;
             background-color: transparent;
-            transition: background-color 450ms ease;
+            transition: background-color 350ms ease;
 
             &:after {
                 content: '';
                 display: block;
-                padding-top: 100%;    
+                padding-top: 100%;
             }
 
             @media screen and (min-width: 1024px) {
                 &:hover {
                     cursor: pointer;
-                    background-color: $violet;    
+                    background-color: $violet;
                 }
             }
         }
 
         .twitter {
-            background-image: url('../assets/twitter.svg');    
+            background-image: url('../assets/twitter.svg');
         }
 
         .behance {
-            background-image: url('../assets/behance.svg');    
+            background-image: url('../assets/behance.svg');
         }
 
         .instagram {
-            background-image: url('../assets/instagram.svg');    
+            background-image: url('../assets/instagram.svg');
         }
 
         .facebook {
-            background-image: url('../assets/facebook.svg');    
+            background-image: url('../assets/facebook.svg');
         }
 
         .fivepx {
-            background-image: url('../assets/500px.svg');    
+            background-image: url('../assets/500px.svg');
         }
 
         .vimeo {
-            background-image: url('../assets/vimeo.svg');            
+            background-image: url('../assets/vimeo.svg');
         }
+    }
+
+    &--hide {
+        opacity: 0;
     }
 }
 </style>
-
