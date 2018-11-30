@@ -1,34 +1,43 @@
 <template>
     <div v-touch:swipe.left="goToNext" v-touch:swipe.right="goToPrev" class="page-personal-item">
-        <div class="page-personal-item__wrapper">
-            <div class="page-personal-item__header">
-                <transition name="fade" mode="out-in">
-                    <ProgressBar v-if="isLoaded">
-                        <Progress v-for="(_, $index) in images"
-                            :key="$index"
-                            :complete="isComplete($index)"
-                            :active="$index === currentIndex"
-                            @click.prevent="setImage($index)"
-                        />
-                    </ProgressBar>
-                </transition>
+      <div class="container">
+        <transition name="fade" mode="out-in">
+          <div v-if="isLoaded" ref="header" class="page-personal-item__header">
+            <button v-if="inProgress" class="page-personal-item__btn page-personal-item__btn--pause" tabindex="-1" @click.left.prevent="pause"></button>
+            <button v-else class="page-personal-item__btn page-personal-item__btn--play" tabindex="-1" @click.left.prevent="rePlay"></button>
 
-                <button class="page-personal-item__btn-close" tabindex="-1" @click.prevent="close"></button>
+            <ProgressBar>
+                <Progress v-for="(_, $index) in images"
+                    :key="$index"
+                    :complete="isComplete($index)"
+                    :active="$index === currentImageIndex"
+                    @click.left.prevent="setImage($index)"
+                />
+            </ProgressBar>
+
+            <button class="page-personal-item__btn page-personal-item__btn--close" tabindex="-1" @click.left.prevent="close"></button>
+          </div>
+        </transition>
+        <transition name="fade" mode="out-in">
+            <div v-if="isLoaded"
+                class="page-personal-item__body"
+            >
+              <div class="page-personal-item__btn-prev" @click.left.prevent="prev"></div>
+              <img v-for="(item, $index) in images"
+                  :key="$index"
+                  :src="item"
+                  :style="`opacity:${opacity($index)}`"
+                  class="page-personal-item__image"
+                  alt=""
+                  @mousedown.left.prevent="pause"
+                  @mouseup.left.prevent="play"
+              />
+              <div class="page-personal-item__btn-next" @click.left.prevent="next"></div>
             </div>
-            <transition name="fade" mode="out-in">
-                <div v-if="isLoaded"
-                    class="page-personal-item__body"
-                >
-                    <div class="page-personal-item__btn-prev" @click.prevent.stop="prev"></div>
-                    <div class="page-personal-item__images" @mousedown="pause" @mouseup="start">
-                        <div v-for="(item, $index) in images" :key="$index" class="page-personal-item__image" :style="`background-image: url('${item}');opacity:${opacity($index)}`"></div>
-                    </div>
-                    <div class="page-personal-item__btn-next" @click.prevent.stop="next"></div>
-                </div>
-            </transition>
+        </transition>
 
-            <Loader v-if="!isLoaded"/>
-        </div>
+        <Loader v-if="!isLoaded"/>
+      </div>
     </div>
 </template>
 <script>
@@ -38,6 +47,7 @@ import Loader from '../components/Loader'
 
 import imageLoader from '../utils/imageLoader'
 import findWork from '../utils/findWork'
+import _debounce from 'lodash/debounce'
 
 let interval = null
 
@@ -64,7 +74,7 @@ export default {
   data () {
     return {
       time: 0,
-      currentIndex: 0,
+      currentImageIndex: 0,
       inProgress: false,
       progress: 100,
       images: [],
@@ -78,10 +88,14 @@ export default {
 
   mounted () {
     window.addEventListener('keydown', this.onKeydown)
+    window.addEventListener('resize', this.setWidthHeader)
   },
 
-  destroyed () {
+  beforeDestroy () {
+    this.stop()
+
     window.removeEventListener('keydown', this.onKeydown)
+    window.removeEventListener('resize', this.setWidthHeader)
   },
 
   computed: {
@@ -113,26 +127,23 @@ export default {
       this.$router.replace('/personal')
     },
 
-    start () {
-      const DURATION = 2000
-      const INTERVAL_STEP = 100
-
+    play () {
+      const TOTAL_SECONDS = 30
+      const MILLISECOND = 100
       this.inProgress = true
 
       interval = setInterval(() => {
-        if (this.time === DURATION) {
-          if (this.currentIndex + 1 < this.images.length) {
-            this.currentIndex++
-            this.time = 0
-          } else {
-            clearInterval(interval)
-          }
+        if (this.time < TOTAL_SECONDS * MILLISECOND) {
+          this.time += MILLISECOND
+          this.progress = Math.round((this.time / (TOTAL_SECONDS * MILLISECOND)) * 100)
+        } else if (this.currentImageIndex < this.images.length - 1) {
+          this.time = 0
+          this.progress = 0
+          this.currentImageIndex++
         } else {
-          this.time += INTERVAL_STEP
+          this.pause()
         }
-
-        this.progress = this.time / DURATION * 100
-      }, INTERVAL_STEP)
+      }, MILLISECOND)
     },
 
     pause () {
@@ -145,14 +156,14 @@ export default {
       clearInterval(interval)
 
       this.time = 0
-      this.progress = 100
+      this.progress = 0
       this.inProgress = false
     },
 
     isComplete (index) {
-      if (index < this.currentIndex) {
+      if (index < this.currentImageIndex) {
         return 100
-      } else if (index === this.currentIndex) {
+      } else if (index === this.currentImageIndex) {
         return this.progress
       }
 
@@ -160,59 +171,56 @@ export default {
     },
 
     opacity (index) {
-      if (index === 0 || index < this.currentIndex) {
+      if (index === 0 || index <= this.currentImageIndex) {
         return 1
-      } else if (index === this.currentIndex) {
-        return this.progress / 100
       }
 
       return 0
     },
 
     setImage (index) {
-      this.currentIndex = index
+      this.stop()
 
-      if (!this.inProgress) {
-        this.start()
-      }
+      this.currentImageIndex = index
+
+      this.play()
     },
 
     setWork (id) {
       this.isLoaded = false
-      this.images = this.$appContent.personal[id].images
-      this.currentIndex = this.images.length - 1
+      this.images = this.$appContent.personal[id].images.slice().reverse()
+      this.images.push(this.images[0])
+      this.currentImageIndex = 0
 
       imageLoader(this.images).then(() => {
         this.isLoaded = true
+
+        this.$nextTick(this.setWidthHeader)
+
+        this.play()
       })
     },
 
-    prev () {
-      if (this.currentIndex - 1 >= 0) {
-        this.pause()
-        this.progress = 0
-        this.time = 0
-        this.setImage(--this.currentIndex)
+    prev: _debounce(function () {
+      if (this.currentImageIndex - 1 >= 0) {
+        this.setImage(--this.currentImageIndex)
       } else {
         this.goToPrev()
       }
-    },
+    }, 100, { leading: true, trailing: false }),
 
     goToPrev () {
       this.stop()
       this.$router.push({ name: 'PersonalItem', params: { id: this.prevWorkId } })
     },
 
-    next () {
-      if (this.currentIndex + 1 < this.images.length) {
-        this.pause()
-        this.time = 0
-        this.progress = 0
-        this.setImage(++this.currentIndex)
+    next: _debounce(function () {
+      if (this.currentImageIndex < this.images.length - 1) {
+        this.setImage(++this.currentImageIndex)
       } else {
         this.goToNext()
       }
-    },
+    }, 100, { leading: true, trailing: false }),
 
     goToNext () {
       this.stop()
@@ -240,6 +248,18 @@ export default {
           this.isLoaded && this.next()
 
           break
+      }
+    },
+
+    setWidthHeader () {
+      this.$refs.header.style.width = this.$el.querySelector('.page-personal-item__image').clientWidth + 'px'
+    },
+
+    rePlay () {
+      if (this.currentImageIndex === this.images.length - 1) {
+        this.setImage(0)
+      } else {
+        this.play()
       }
     }
   }
@@ -273,83 +293,97 @@ html.no-scroll {
     right: @left;
     position: fixed;
     background-color: $body-background;
-    padding-bottom: @top * -1;
     transform: translateY(@top * -1);
     box-sizing: content-box;
     z-index: 9999;
     overflow: hidden;
 
-    &__wrapper {
-        width: 100%;
-        height: @width;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        justify-content: stretch;
-        align-items: stretch;
+    .container {
+      width: 100%;
+      height: 100%;
+      max-width: 1024px;
+      display: flex;
+      flex-direction: column;
+      justify-content: stretch;
+      align-items: stretch;
+      padding: 0 10px 10px;
+      margin: auto;
     }
 
     &__header {
-        width: 100%;
+        flex: 0 0 auto;
         height: 45px;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 3;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: auto;
     }
 
-    &__btn-close {
+    &__btn {
         width: 20px;
         height: @width;
-        background: transparent url('../assets/close.svg') no-repeat center;
         background-size: 100%;
-        position: absolute;
-        top: 20px;
-        right: 10px;
 
-        @media screen and (max-width: 1024px) {
-            width: 15px;
-            height: @width;
+        &--close {
+          background: transparent url('../assets/close.svg') no-repeat center;
+          position: fixed;
+          top: 16px;
+          right: 15px;
+
+          z-index: 3;
+
+          @media screen and (max-width: 1024px) {
+            margin-left: 10px;
+            position: static;
+          }
+        }
+
+        &--play, &--pause {
+          margin-right: 10px;
+        }
+
+        &--play {
+          background: transparent url('../assets/play.svg') no-repeat center;
+        }
+
+        &--pause {
+          background: transparent url('../assets/pause.svg') no-repeat center;
         }
     }
 
     &__body {
-        padding: 45px 0;
-    }
-
-    &__body, &__images {
-        width: 100%;
-        height: 100%;
+        flex: 1 1 auto;
+        padding: 0 10%;
         position: relative;
     }
 
     &__image {
-        width: 100%;
-        height: @width;
+        max-width: 100%;
+        max-height: 100%;
+        margin: auto;
+        display: block;
+        position: absolute;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        opacity: 0;
-        position: absolute;
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: contain;
+        z-index: 1;
     }
 
     &__btn-prev, &__btn-next {
-        width: 25%;
-        position: absolute;
-        top: 45px;
-        bottom: 0;
-        z-index: 3;
+        width: 45%;
+        position: fixed;
+        top: 40px;
+        bottom: 10px;
+        margin: auto;
         background-repeat: no-repeat;
         background-size: 30px;
         opacity: 0;
         transition: opacity 450ms ease;
+        z-index: 3;
 
-        @media screen and (min-width: 1024px) {
+        @media screen and (min-width: 1025px) {
+            width: 50%;
             cursor: pointer;
             opacity: .4;
 

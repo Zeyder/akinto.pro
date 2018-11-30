@@ -29,8 +29,8 @@
                 </router-link>
 
                 <router-link to="/" class="app-header__link">Home</router-link>
-                <router-link to="/personal" class="app-header__link">Personal</router-link>
                 <router-link to="/commercial" class="app-header__link">Commercial</router-link>
+                <router-link to="/personal" class="app-header__link">Personal</router-link>
                 <router-link to="/videos" class="app-header__link">Videos</router-link>
                 <router-link to="/contacts" class="app-header__link">Contacts</router-link>
 
