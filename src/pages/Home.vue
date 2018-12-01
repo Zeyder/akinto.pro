@@ -150,7 +150,7 @@ export default {
     .progress-bar {
         left: 50px;
         right: 50px;
-        top: 0;
+        top: 22px;
         position: absolute;
         z-index: 3;
         width: auto;

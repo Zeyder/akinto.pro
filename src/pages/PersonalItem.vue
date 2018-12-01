@@ -188,8 +188,7 @@ export default {
 
     setWork (id) {
       this.isLoaded = false
-      this.images = this.$appContent.personal[id].images.slice().reverse()
-      this.images.push(this.images[0])
+      this.images = this.$appContent.personal[id].images
       this.currentImageIndex = 0
 
       imageLoader(this.images).then(() => {
